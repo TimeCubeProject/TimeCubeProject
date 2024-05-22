@@ -1,0 +1,32 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Login</title>
+</head>
+<body>
+  <h1>Google Login</h1>
+  <a href="https://dergcube.westus.cloudapp.azure.com/auth/google">Login with Google</a>
+  <script>
+    // Function to extract query parameters from URL
+    function getQueryParams() {
+      const params = {};
+      window.location.search.substring(1).split('&').forEach(pair => {
+        const [key, value] = pair.split('=');
+        params[key] = decodeURIComponent(value || '');
+      });
+      return params;
+    }
+
+    // Extract token from URL
+    const params = getQueryParams();
+    if (params.token) {
+      localStorage.setItem('token', params.token);
+      console.log('Token stored:', params.token);
+      window.history.replaceState({}, document.title, '/');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="css/show_tasks.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.css">
+
+  <script src="config.js"></script>
+
+
+</head>
+
+<body>
+
+<div id="content-container" class="container">
+  <button id="logout-btn" class="logout-btn">Logout</button>
+  <h2>Task Manager</h2>
+  <a href="settings.html" class="menu-option">Settings</a>
+  <button id="add-task-btn" class="add-task-btn">Add Task</button>
+  <button id="refresh-window-btn" class="refresh-window-btn">Refresh</button>
+
+  <h3>Assigned Tasks</h3>
+  <div id="tasks-container" class="tasks-container">
+    <!-- Assigned tasks content goes here -->
+  </div>
+  <button id="load-more-assigned-btn" class="load-more-btn">Show More</button>
+
+  <h3>Unassigned Tasks</h3>
+  <div id="unassigned-tasks-container" class="tasks-container">
+    <!-- Unassigned tasks content goes here -->
+  </div>
+  <button id="load-more-unassigned-btn" class="load-more-btn">Show More</button>
+</div>
+
+<div id="login-container" class="container">
+  <button id="login-btn" class="login-btn">Login with Google</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.min.js"></script>
+<script src="js/Task.js"></script>
+<script src="js/fetches.js"></script>
+<script src="js/show_tasks_Manager.js"></script>
+
+<script>
+
+  const taskManager = new TaskManager();
+
+
+  document.addEventListener('DOMContentLoaded', async function () {
+    var token = localStorage.getItem('token');
+
+    if (token == null || token === '' || !(await isTokenValid(token))) {
+      var urlString = window.location.href;
+      var url = new URL(urlString);
+      var tokenToDownload = url.searchParams.get('token');
+
+      if (tokenToDownload) {
+        localStorage.setItem('token', tokenToDownload);
+        console.log('Token został dodany do localStorage.');
+        showContent();
+      } else {
+        console.error('Nie znaleziono tokena w adresie URL.');
+        showLogin();
+      }
+    } else {
+      showContent();
+    }
+
+    function showContent() {
+      document.getElementById('content-container').style.display = 'block';
+      document.getElementById('login-container').style.display = 'none';
+    }
+
+    function showLogin() {
+      document.getElementById('login-container').style.display = 'block';
+      document.getElementById('login-btn').addEventListener('click', function () {
+        window.location.href = window.link + '/auth/google';
+      });
+    }
+  });
+
+</script>
+
+</body>
+</html>

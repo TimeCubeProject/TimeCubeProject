@@ -8,7 +8,8 @@ async function getUserCubes() {
   try {
     const response = await fetch(url, {
       method: 'POST', headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       }, body: JSON.stringify(data)
     });
 
@@ -40,7 +41,8 @@ async function saveTaskToServer(taskName) {
   try {
     const response = await fetch(url, {
       method: 'POST', headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       }, body: JSON.stringify(data)
     });
 
@@ -64,7 +66,8 @@ async function setProjectActive(projectId, cubeId, cubeMac, wall) {
 
   return fetch(url, {
     method: 'POST', headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
     }, body: JSON.stringify(data)
   })
     .then(response => {
@@ -93,7 +96,8 @@ async function removeProject(project_id) {
   try {
     const response = await fetch(url, {
       method: 'POST', headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       }, body: JSON.stringify(data)
     });
 
@@ -119,7 +123,8 @@ async function isTokenValid(token) {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       },
       body: JSON.stringify(data)
     });

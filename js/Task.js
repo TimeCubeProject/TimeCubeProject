@@ -1,5 +1,6 @@
 const link = window.link
 const token = localStorage.getItem('token')
+
 class Task {
   constructor(ProjectID, CubeID, Side, Name, Time, Mac) {
     this.ProjectID = ProjectID;
@@ -63,7 +64,7 @@ class Task {
     });
 
     showHistoryBtn.addEventListener('click', () => {
-      this.showHistory(this.ProjectID);
+      showHistory(this.ProjectID);
     });
 
     deleteBtn.addEventListener('click', async () => {
@@ -81,86 +82,6 @@ class Task {
 
     return taskDiv;
   }
-
-  async showHistory(project_id) {
-    const url = link + "/get_events";
-    const data = {token: token, project_id: project_id};
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch history');
-      }
-
-      const historyData = await response.json();
-      console.log('History Data:', historyData);
-
-      // Check if there is an existing history container, if so remove it
-      let existingHistoryDiv = document.querySelector('.history');
-      if (existingHistoryDiv) {
-        existingHistoryDiv.remove();
-      }
-
-      // Create a new history container
-      const historyDiv = document.createElement('div');
-      historyDiv.classList.add('history');
-      historyDiv.style.position = 'fixed';
-      historyDiv.style.top = '10px';
-      historyDiv.style.right = '10px';
-      historyDiv.style.width = '80%';
-      historyDiv.style.height = '400px';
-      historyDiv.style.padding = '10px';
-      historyDiv.style.background = '#f0f0f0';
-      historyDiv.style.border = '1px solid #ccc';
-      historyDiv.style.zIndex = '1000'; // Ensure it's above other content
-      document.body.appendChild(historyDiv);
-
-      // Add a close button to the history container
-      const closeButton = document.createElement('button');
-      closeButton.textContent = 'Close';
-      closeButton.style.position = 'absolute';
-      closeButton.style.top = '5px';
-      closeButton.style.right = '5px';
-      closeButton.style.padding = '5px 10px';
-      closeButton.style.background = '#007bff'; // blue background
-      closeButton.style.color = '#fff'; // white text
-      closeButton.style.border = 'none';
-      closeButton.style.borderRadius = '5px';
-      closeButton.style.cursor = 'pointer';
-      closeButton.addEventListener('click', () => {
-        historyDiv.remove();
-      });
-      historyDiv.appendChild(closeButton);
-
-      // Prepare data for Gantt chart
-      const tasks = historyData.map(event => {
-        const utcTime = new Date(event.Time);
-        const localTime = new Date(utcTime.toLocaleString('en-US', {timeZone: 'Europe/Warsaw'}));
-        const endDate = new Date(localTime.getTime() + 3600000); // Add 1 hour to end time
-
-        return {
-          id: event.EventID,
-          name: event.Name,
-          start: localTime.toISOString().slice(0, 10), // YYYY-MM-DD
-          end: endDate.toISOString().slice(0, 10), // YYYY-MM-DD
-          progress: 100,
-        };
-      });
-
-      const gantt = new Gantt(historyDiv, tasks, {
-        view_mode: 'Day',
-        language: 'en',
-      });
-    } catch (error) {
-      console.error('Error fetching history:', error);
-    }
-  }
-
 
   async showEditPanel(taskDiv) {
     let overlay = document.querySelector('.overlay');
@@ -259,7 +180,12 @@ class Task {
       this.Mac = macSelect.value;
       this.updateTask(taskDiv);
 
-      await setProjectActive(this.ProjectID, this.CubeID, macSelect.value, this.Side);
+      let result = await setProjectActive(this.ProjectID, this.CubeID, macSelect.value, this.Side);
+      console.log("result  " + result)
+      if (!result) {
+        alert("Multiple projects on single cube's side")
+      }
+
       document.body.removeChild(editPanel);
       taskManager.generateInitialTasks();
       overlay.style.display = 'none';

@@ -51,7 +51,6 @@ class TaskManager {
       if (!response.ok) {
         const errorData = await response.json();
         if (errorData.code === 101) { // Token invalid code
-          await handleExpiredToken();
           throw new Error('Token expired or invalid');
         } else {
           throw new Error('Failed to fetch projects');

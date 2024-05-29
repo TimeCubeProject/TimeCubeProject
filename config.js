@@ -1,2 +1,2 @@
 
-window.link = "https://dergcube.westus.cloudapp.azure.com";
+window.link = "http://localhost:3000";

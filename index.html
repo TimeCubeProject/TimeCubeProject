@@ -6,11 +6,16 @@
   <title>Task Manager</title>
   <link rel="stylesheet" href="css/show_tasks.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.css">
-
-  <script src="config.js"></script>
-
-
 </head>
+<script src="config.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
+<script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
+<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+
 
 <body>
 
@@ -25,26 +30,25 @@
   <div id="tasks-container" class="tasks-container">
     <!-- Assigned tasks content goes here -->
   </div>
-  <button id="load-more-assigned-btn" class="load-more-btn">Show More</button>
+  <button id="load-more-assigned-btn" class="load-more-btn">Load More</button>
 
   <h3>Unassigned Tasks</h3>
   <div id="unassigned-tasks-container" class="tasks-container">
     <!-- Unassigned tasks content goes here -->
   </div>
-  <button id="load-more-unassigned-btn" class="load-more-btn">Show More</button>
+  <button id="load-more-unassigned-btn" class="load-more-btn">Load More</button>
 </div>
 
 <div id="login-container" class="container">
   <button id="login-btn" class="login-btn">Login with Google</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.min.js"></script>
 <script src="js/Task.js"></script>
 <script src="js/fetches.js"></script>
 <script src="js/show_tasks_Manager.js"></script>
+<script src="js/index.js"></script>
 
 <script>
-
   const taskManager = new TaskManager();
 
 
@@ -55,10 +59,10 @@
       var urlString = window.location.href;
       var url = new URL(urlString);
       var tokenToDownload = url.searchParams.get('token');
-
       if (tokenToDownload) {
         localStorage.setItem('token', tokenToDownload);
         console.log('Token został dodany do localStorage.');
+        location.reload();
         showContent();
       } else {
         console.error('Nie znaleziono tokena w adresie URL.');
@@ -76,12 +80,14 @@
     function showLogin() {
       document.getElementById('login-container').style.display = 'block';
       document.getElementById('login-btn').addEventListener('click', function () {
-        window.location.href = window.link + '/auth/google';
+        window.location.href = link + '/auth/google';
       });
     }
   });
 
 </script>
+
+
 
 </body>
 </html>

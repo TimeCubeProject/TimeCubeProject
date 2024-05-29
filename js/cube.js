@@ -8,7 +8,7 @@ class Cube {
 
   display(action) {
     const actionText = action === 'add' ? 'dodana' : 'usunięta';
-    return `<div>Kostka o MAC Address: ${this.cube_mac}, Kostka ID: ${this.cube_id} została ${actionText}. Token: ${token}</div>`;
+    return `<div>Kostka o MAC Address: ${this.cube_mac}, Kostka ID: ${this.cube_id} została ${actionText}.`;
   }
 
   toJSON() {

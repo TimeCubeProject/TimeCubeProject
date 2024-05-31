@@ -62,6 +62,7 @@
       if (tokenToDownload) {
         localStorage.setItem('token', tokenToDownload);
         console.log('Token został dodany do localStorage.');
+        removeTokenFromURL();
         location.reload();
         showContent();
       } else {
@@ -69,6 +70,7 @@
         showLogin();
       }
     } else {
+      removeTokenFromURL();
       showContent();
     }
 
@@ -83,6 +85,19 @@
         window.location.href = window.link + '/auth/google';
       });
     }
+
+    function removeTokenFromURL() {
+      const currentURL = window.location.href;
+      const url = new URL(currentURL);
+      const params = new URLSearchParams(url.search);
+
+      if (params.has('token')) {
+        params.delete('token');
+        const newURL = `${url.origin}${url.pathname}?${params.toString()}`;
+        window.history.pushState({}, document.title, newURL);
+      }
+    }
+    
   });
 
 </script>

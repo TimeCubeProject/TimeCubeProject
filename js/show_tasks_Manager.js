@@ -68,7 +68,8 @@ class TaskManager {
         const time = project.Time || 0; // Replace with actual data fields from your API response
         this.addTask(ProjectID, name, cubeID, side, time);
       });
-
+      this.tasks.sort((a, b) => b.Side - a.Side).reverse();
+      // console.log(this.tasks)
       this.renderTasks();
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -76,6 +77,7 @@ class TaskManager {
   }
 
   generateInitialTasks() {
+    console.log("work")
     this.getTheProjects();
   }
 
@@ -172,7 +174,7 @@ class TaskManager {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function cos() {
   const taskManager = new TaskManager();
 
   const tasksContainer = document.getElementById('tasks-container');
@@ -183,4 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
   taskManager.generateInitialTasks();
   taskManager.handleAddTask();
   taskManager.handleLoadMore();
-});
+}
+
+document.addEventListener('DOMContentLoaded', cos);
+
+setInterval(cos, 30000);

@@ -55,14 +55,22 @@
   document.addEventListener('DOMContentLoaded', async function () {
     var token = localStorage.getItem('token');
 
-    if (token == null || token === '' || !(await isTokenValid(token))) {
+    // ?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6NCwiaWF0IjoxNzE3MDkxMjc2LCJleHAiOjE3MTcxMzQ0NzYsImlzcyI6Im15LWFwaSIsInN1YiI6IjQifQ.YHH-Ns1NVRAN1VYI4mc-EieJfce4gixhNkLy7YmRRxU
+
+    if (!(await isTokenValid(token))) {
+      removeTokenFromURL();
+      localStorage.removeItem('token');
+      location.reload();
+    }
+
+    if (token == null || token === '') {
       var urlString = window.location.href;
       var url = new URL(urlString);
       var tokenToDownload = url.searchParams.get('token');
       if (tokenToDownload) {
         localStorage.setItem('token', tokenToDownload);
         console.log('Token został dodany do localStorage.');
-        removeTokenFromURL();
+        removeTokenFromURL()
         location.reload();
         showContent();
       } else {
@@ -70,7 +78,7 @@
         showLogin();
       }
     } else {
-      removeTokenFromURL();
+      removeTokenFromURL()
       showContent();
     }
 
@@ -80,6 +88,7 @@
     }
 
     function showLogin() {
+      console.log(link)
       document.getElementById('login-container').style.display = 'block';
       document.getElementById('login-btn').addEventListener('click', function () {
         window.location.href = window.link + '/auth/google';
@@ -97,11 +106,9 @@
         window.history.pushState({}, document.title, newURL);
       }
     }
-    
   });
 
 </script>
-
 
 
 </body>

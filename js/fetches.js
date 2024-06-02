@@ -206,7 +206,7 @@ async function showHistory(project_id) {
     const tasks = historyData.map(event => {
       const utcTime = new Date(event.Time);
       const localTime = new Date(utcTime.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));
-      const endDate = new Date(localTime.getTime() + 3600000); // Add 1 hour to end time
+      const endDate = new Date(utcTime.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' })); // Add 1 hour to end time
 
       return {
         id: event.EventID.toString(),
@@ -217,13 +217,20 @@ async function showHistory(project_id) {
       };
     });
 
-    const gantt = new Gantt(historyDiv, tasks, {
-      view_mode: 'Day',
+    console.log(tasks)
+
+    let arrayCombinedToOneObject = combineTimeObjects(tasks , project_id);
+    console.log(arrayCombinedToOneObject)
+
+    const gantt = new Gantt(historyDiv, arrayCombinedToOneObject, {
+      view_mode: 'Hour  ',
       language: 'en',
       custom_popup_html: function(task) {
+        console.log(task)
         // Custom popup to show date and time
         const start_date = new Date(task.start);
         const end_date = new Date(task.end);
+
         return `
           <div class="details-container">
             <h5>${task.name}</h5>
@@ -238,3 +245,19 @@ async function showHistory(project_id) {
   }
 }
 
+function combineTimeObjects(dataArray) {
+  const combinedArray = [];
+
+  for (let i = 0; i < dataArray.length; i += 2) {
+    if (i + 1 < dataArray.length) {
+      const combinedObject = {
+        name: dataArray[i].name,
+        start: dataArray[i].start,
+        end: dataArray[i + 1].end
+      };
+      combinedArray.push(combinedObject);
+    }
+  }
+
+  return combinedArray;
+}

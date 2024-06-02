@@ -36,7 +36,7 @@ class Task {
     taskDiv.appendChild(sideElement);
 
     const timeElement = document.createElement('p');
-    timeElement.textContent = `Time: ${this.Time}`;
+    timeElement.textContent = `Time: ` + formatTime(this.Time);
     taskDiv.appendChild(timeElement);
 
     const buttonContainer = document.createElement('div');
@@ -212,7 +212,7 @@ class Task {
     const sideElement = taskDiv.querySelectorAll('p')[2];
     nameElement.textContent = this.Name;
     cubeIDElement.textContent = `CubeID: ${this.CubeID}`;
-    sideElement.textContent = `Side: ${this.Side}`;
+    sideElement.textContent = `Wall: ${this.Side}`;
   }
 
 }
@@ -243,5 +243,14 @@ function createConfirmationIfUserWantToDelteTask() {
   return {modalOverlay, confirmBtn, cancelBtn};
 }
 
+function formatTime(seconds) {
+  const days = Math.floor(seconds / (3600 * 24));
+  seconds %= 3600 * 24;
+  const hours = Math.floor(seconds / 3600);
+  seconds %= 3600;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
 
+  return `${days} dni, ${hours} godzin, ${minutes} minut, ${remainingSeconds} sekund`;
+}
 

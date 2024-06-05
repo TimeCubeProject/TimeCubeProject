@@ -371,7 +371,7 @@ button[type="submit"]:hover,
   background: #fff;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .details-container h5 {
@@ -385,9 +385,6 @@ button[type="submit"]:hover,
   font-size: 14px;
   color: #666;
 }
-
-
-
 
 #unassigned-tasks-container {
   display: grid;

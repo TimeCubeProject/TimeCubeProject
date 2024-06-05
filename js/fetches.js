@@ -146,14 +146,14 @@ async function isTokenValid(token) {
   }
 }
 
-async function showHistory(project_id) {
+async function showHistory(project_id, project_name) {
   const url = link + "/get_events";
-  const data = { token: token, project_id: project_id };
+  const data = {token: token, project_id: project_id};
 
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data),
     });
 
@@ -205,31 +205,33 @@ async function showHistory(project_id) {
     // Prepare data for Gantt chart
     const tasks = historyData.map(event => {
       const utcTime = new Date(event.Time);
-      const localTime = new Date(utcTime.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));
-      const endDate = new Date(utcTime.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' })); // Add 1 hour to end time
+      const localTime = new Date(utcTime.toLocaleString('en-US', {timeZone: 'Europe/Warsaw'}));
+      const endDate = new Date(utcTime.toLocaleString('en-US', {timeZone: 'Europe/Warsaw'})); // Add 1 hour to end time
 
       return {
         id: event.EventID.toString(),
-        name: event.Name,
+        name: project_name,
         start: localTime.toISOString(), // YYYY-MM-DDTHH:MM:SSZ
         end: endDate.toISOString(), // YYYY-MM-DDTHH:MM:SSZ
         progress: 100,
       };
     });
 
-    console.log(tasks)
+    // console.log(tasks)
 
-    let arrayCombinedToOneObject = combineTimeObjects(tasks , project_id);
+    let arrayCombinedToOneObject = combineTimeObjects(tasks, project_id);
     console.log(arrayCombinedToOneObject)
 
     const gantt = new Gantt(historyDiv, arrayCombinedToOneObject, {
       view_mode: 'Hour  ',
       language: 'en',
-      custom_popup_html: function(task) {
+      custom_popup_html: function (task) {
         console.log(task)
         // Custom popup to show date and time
         const start_date = new Date(task.start);
+        console.log(task.start)
         const end_date = new Date(task.end);
+        console.log(task.end)
 
         return `
           <div class="details-container">
@@ -249,14 +251,16 @@ function combineTimeObjects(dataArray) {
   const combinedArray = [];
 
   for (let i = 0; i < dataArray.length; i += 2) {
-    if (i + 1 < dataArray.length) {
-      const combinedObject = {
-        name: dataArray[i].name,
-        start: dataArray[i].start,
-        end: dataArray[i + 1].end
-      };
-      combinedArray.push(combinedObject);
+    const combinedObject = {
+      name: dataArray[i].name,
+      start: dataArray[i].start,
+    };
+    if (i + 1 === dataArray.length) {
+      combinedObject.end = new Date(Date.now())
+    } else {
+      combinedObject.end = dataArray[i + 1].end
     }
+    combinedArray.push(combinedObject);
   }
 
   return combinedArray;

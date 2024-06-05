@@ -135,19 +135,21 @@ class TaskManager {
       saveBtn.classList.add('save-btn');
 
       saveBtn.addEventListener('click', async () => {
-        const name = nameInput.value; // Assuming nameInput is the input element where user enters task name
+        const name = nameInput.value;
         let projectId = "";
+        if (name === '') {
+          alert("name of task is empty")
+        } else {
+          try {
+            const response = await saveTaskToServer(name);
+            projectId = response.projectId;
 
-        try {
-          const response = await saveTaskToServer(name);
-          projectId = response.projectId;
-
-          // Log the new project ID
-          console.log('New project ID:', projectId);
-        } catch (error) {
-          console.error('Failed to save task to server:', error);
+            // Log the new project ID
+            console.log('New project ID:', projectId);
+          } catch (error) {
+            console.error('Failed to save task to server:', error);
+          }
         }
-
         this.addTask(projectId, name);
 
         this.renderTasks();
@@ -174,7 +176,7 @@ class TaskManager {
   }
 }
 
-function cos() {
+function initTheWebsite() {
   const taskManager = new TaskManager();
 
   const tasksContainer = document.getElementById('tasks-container');
@@ -187,6 +189,6 @@ function cos() {
   taskManager.handleLoadMore();
 }
 
-document.addEventListener('DOMContentLoaded', cos);
+document.addEventListener('DOMContentLoaded', initTheWebsite);
 
-setInterval(cos, 30000);
+setInterval(initTheWebsite, 30000);

@@ -64,7 +64,7 @@ class Task {
     });
 
     showHistoryBtn.addEventListener('click', () => {
-      showHistory(this.ProjectID);
+      showHistory(this.ProjectID, this.Name);
     });
 
     deleteBtn.addEventListener('click', async () => {

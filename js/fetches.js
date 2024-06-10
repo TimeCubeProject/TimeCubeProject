@@ -1,3 +1,5 @@
+// Pobiera listę kostek (Cube) przypisanych do użytkownika na podstawie przesłanego tokena. Zwraca tablicę obiektów,
+// gdzie każdy obiekt zawiera Mac (adres MAC kostki) i Cube_users_ID (identyfikator kostki użytkownika).
 async function getUserCubes() {
   const url = link + "/get_user_cubes";
   console.log(url)
@@ -18,7 +20,6 @@ async function getUserCubes() {
 
     const userCubes = await response.json();
 
-    // Mapujemy odpowiedź JSON tylko do potrzebnych pól
     const cubesData = userCubes.map(cube => ({
       Mac: cube.Mac, Cube_users_ID: cube.Cube_users_ID
     }));
@@ -27,10 +28,12 @@ async function getUserCubes() {
 
   } catch (error) {
     console.error('Error fetching user cubes:', error);
-    throw error; // Ponowne rzucenie błędu dla obsługi przez wywołującego
+    throw error;
   }
 }
 
+// Wysyła żądanie dodania nowego projektu na serwer. Otrzymuje nazwę zadania taskName, którą przesyła razem z tokenem.
+// Zwraca obiekt zawierający projectId (identyfikator nowo utworzonego projektu).
 async function saveTaskToServer(taskName) {
   const url = link + "/add_project";
   const data = {
@@ -56,6 +59,9 @@ async function saveTaskToServer(taskName) {
   }
 }
 
+// Ustawia dany projekt jako aktywny na serwerze. Przesyła projectId, cubeId, cubeMac i wall (numer ściany) razem z tokenem.
+// Zwraca true lub false w zależności od sukcesu operacji. W przypadku, gdy success jest false i error to
+// "Multiple projects on single cube's side", zwraca false.
 async function setProjectActive(projectId, cubeId, cubeMac, wall) {
   const url = link + "/set_project_active";
   const data = {
@@ -94,7 +100,8 @@ async function setProjectActive(projectId, cubeId, cubeMac, wall) {
   }
 }
 
-
+// Wysyła żądanie usunięcia projektu o danym project_id na serwer.
+// Zwraca obiekt zawierający projectId (identyfikator usuniętego projektu).
 async function removeProject(project_id) {
   const url = link + "/remove_project";
   const data = {
@@ -120,6 +127,8 @@ async function removeProject(project_id) {
   }
 }
 
+// Sprawdza poprawność przesłanego tokenu na podstawie żądania do serwera. Zwraca true, jeśli token jest poprawny i
+// użytkownik jest autoryzowany, lub false w przeciwnym razie.
 async function isTokenValid(token) {
   const url = link + "/get_user_cubes";
   const data = {
@@ -145,7 +154,11 @@ async function isTokenValid(token) {
     return false;
   }
 }
-
+// Pobiera historię zdarzeń (events) dla danego projektu na podstawie project_id
+// i wyświetla ją w postaci wykresu Gantta. Tworzy kontener historyDiv do wyświetlenia historii, usuwa istniejący
+// kontener historii (jeśli istnieje) i dodaje przycisk zamknięcia. Przygotowuje dane z historii do wykresu Gantta,
+// formatując odpowiednio daty. Tworzy obiekt Gantt z biblioteki do renderowania wykresu Gantta, przekazując historyDiv,
+// przetworzone zadania (tasks) oraz opcje renderowania wykresu.
 async function showHistory(project_id, project_name) {
   const url = link + "/get_events";
   const data = {token: token, project_id: project_id};
@@ -247,6 +260,8 @@ async function showHistory(project_id, project_name) {
   }
 }
 
+// Przyjmuje tablicę dataArray zawierającą obiekty czasowe (tasks) i łączy je w pary, tworząc obiekty zaczynające się
+// od obiektu z start i kończące na obiekcie z end. Zwraca tablicę obiektów z name, start i end.
 function combineTimeObjects(dataArray) {
   const combinedArray = [];
 

@@ -1,4 +1,8 @@
+
 class TaskManager {
+
+  // Inicjalizacja elementów DOM: Pobiera elementy DOM takie jak kontenery na zadania, przyciski do dodawania i ładowania zadań.
+  // Inicjalizacja właściwości: Ustawia początkowe właściwości takie jak lista zadań i stany przycisków "Load More".
   constructor() {
     this.tasksContainer = document.getElementById('tasks-container');
     this.unassignedTasksContainer = document.getElementById('unassigned-tasks-container');
@@ -10,18 +14,22 @@ class TaskManager {
     this.loadMoreUnassignedClicked = false;
   }
 
+  // metoda w klasie TaskManager która dodaje kostke jesli nie jest podany side to wtedy side jest równy -1
   addTask(ProjectID, name, cubeID = "", side = -1, time = 0) {
     const task = new Task(ProjectID, cubeID, side, name, time);
     this.tasks.push(task);
   }
 
+  // metoda ktora renderuje zadania na stronie głównej, dzieląc je na przypisane i nieprzypisane.
   renderTasks() {
     this.tasksContainer.innerHTML = '';
     this.unassignedTasksContainer.innerHTML = '';
 
+    // podzielenie taskow na przypisane i nie przypisane
     const assignedTasks = this.tasks.filter(task => task.Side !== -1);
     const unassignedTasks = this.tasks.filter(task => task.Side === -1);
 
+    // pokazanie poczatkowo tylko 6 taskow (dotyczy taskow assigned i unassigned)
     const assignedTasksToShow = this.loadMoreAssignedClicked ? assignedTasks : assignedTasks.slice(0, 6);
     const unassignedTasksToShow = this.loadMoreUnassignedClicked ? unassignedTasks : unassignedTasks.slice(0, 6);
 
@@ -36,6 +44,7 @@ class TaskManager {
     });
   }
 
+  // metoda która pobiera zadania z serwera, dodaje je do tablicy tasks  i sortuje je.
   async getTheProjects() {
     const token = localStorage.getItem('token');
     try {
@@ -59,28 +68,24 @@ class TaskManager {
 
       const data = await response.json();
       this.tasks = [];
-      // Assuming the response data is an array of projects/tasks
       data.forEach(project => {
-        const ProjectID = project.ProjectID; // Replace with actual data fields from your API response
-        const cubeID = project.Cube_users_ID; // Replace with actual data fields from your API response
-        const side = project.Side; // Replace with actual data fields from your API response
-        const name = project.Name; // Replace with actual data fields from your API response
-        const time = project.Time || 0; // Replace with actual data fields from your API response
+        const ProjectID = project.ProjectID;
+        const cubeID = project.Cube_users_ID;
+        const side = project.Side;
+        const name = project.Name;
+        const time = project.Time || 0;
         this.addTask(ProjectID, name, cubeID, side, time);
       });
-      this.tasks.sort((a, b) => b.Side - a.Side).reverse();
-      // console.log(this.tasks)
+
+      // sortowanie taskow po sciankach w kolejnosi rosnacej
+      this.tasks.sort((a, b) => a.Side - b.Side);
       this.renderTasks();
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
   }
 
-  generateInitialTasks() {
-    console.log("work")
-    this.getTheProjects();
-  }
-
+  // Obsługuje logikę przycisków "Load More", które przełączają między wyświetlaniem wszystkich zadań a ograniczoną liczbą zadań.
   handleLoadMore() {
     let btnAssigned = document.getElementById("load-more-assigned-btn");
     let btnUnAssigned = document.getElementById("load-more-unassigned-btn");
@@ -97,23 +102,7 @@ class TaskManager {
     });
   }
 
-  createForm() {
-    const form = document.createElement('form');
-    form.id = 'taskForm';
-
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      const name = document.getElementById('name').value;
-
-      this.addTask(name);
-      this.renderTasks();
-      form.reset();
-    });
-
-    return form;
-  }
-
+  // Obsługuje logikę dodawania nowego zadania przez użytkownika.
   handleAddTask() {
     this.addTaskBtn.addEventListener('click', () => {
       let overlay = document.querySelector('.overlay');
@@ -122,14 +111,17 @@ class TaskManager {
         overlay.classList.add('overlay');
         document.body.appendChild(overlay);
       }
+      // stworznie tymczasowego edit panela
       const editPanel = document.createElement('div');
       editPanel.classList.add('edit-panel');
 
+      // stworznie tymczasowego Inputa do napisania nazwy taska
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.placeholder = 'Name of Task';
       editPanel.appendChild(nameInput);
 
+      // utworzenie saveBtn
       const saveBtn = document.createElement('button');
       saveBtn.textContent = 'Save';
       saveBtn.classList.add('save-btn');
@@ -154,6 +146,7 @@ class TaskManager {
 
         this.renderTasks();
 
+        // usuniecie editPanelu
         document.body.removeChild(editPanel);
 
         overlay.style.display = 'none';
@@ -161,6 +154,7 @@ class TaskManager {
 
       editPanel.appendChild(saveBtn);
 
+      // utworznie przycisku do zamkniecia panelu
       const closeBtn = document.createElement('button');
       closeBtn.textContent = 'Cancel';
       closeBtn.classList.add('close-btn');
@@ -176,19 +170,16 @@ class TaskManager {
   }
 }
 
+// Inicjalizuje stronę, tworząc instancję TaskManager i uruchamiając główne metody.
 function initTheWebsite() {
   const taskManager = new TaskManager();
 
-  const tasksContainer = document.getElementById('tasks-container');
-
-  const form = taskManager.createForm();
-  tasksContainer.appendChild(form);
-
-  taskManager.generateInitialTasks();
+  taskManager.getTheProjects();
   taskManager.handleAddTask();
   taskManager.handleLoadMore();
 }
 
 document.addEventListener('DOMContentLoaded', initTheWebsite);
 
+// funkcja ktora odswieza strone co 30 sekund
 setInterval(initTheWebsite, 30000);

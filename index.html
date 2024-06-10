@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Task Manager</title>
-  <link rel="stylesheet" href="css/show_tasks.css">
-
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="css/show_tasks.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
 
 </head>
 
@@ -19,89 +17,98 @@
 <body>
 
 <div id="content-container" class="container">
-  <button id="logout-btn" class="logout-btn">Logout</button>
-  <h2>Task Manager</h2>
-  <a href="settings.html" class="menu-option">Settings</a>
-  <button id="add-task-btn" class="add-task-btn">Add Task</button>
-  <button id="refresh-window-btn" class="refresh-window-btn">Refresh</button>
+    <button id="logout-btn" class="logout-btn">Logout</button>
+    <h2>Task Manager</h2>
+    <a href="settings.html" class="menu-option">Settings</a>
+    <button id="add-task-btn" class="add-task-btn">Add Task</button>
+    <button id="refresh-window-btn" class="refresh-window-btn">Refresh</button>
 
-  <h3>Assigned Tasks</h3>
-  <div id="tasks-container" class="tasks-container">
-    <!-- Assigned tasks content goes here -->
-  </div>
-  <button id="load-more-assigned-btn" class="load-more-btn">Load More</button>
+    <h3>Assigned Tasks</h3>
+    <div id="tasks-container" class="tasks-container">
+        <!-- Assigned tasks content goes here -->
+    </div>
+    <button id="load-more-assigned-btn" class="load-more-btn">Load More</button>
 
-  <h3>Unassigned Tasks</h3>
-  <div id="unassigned-tasks-container" class="tasks-container">
-    <!-- Unassigned tasks content goes here -->
-  </div>
-  <button id="load-more-unassigned-btn" class="load-more-btn">Load More</button>
+    <h3>Unassigned Tasks</h3>
+    <div id="unassigned-tasks-container" class="tasks-container">
+        <!-- Unassigned tasks content goes here -->
+    </div>
+    <button id="load-more-unassigned-btn" class="load-more-btn">Load More</button>
 </div>
 
 <div id="login-container" class="container">
-  <button id="login-btn" class="login-btn">Login with Google</button>
+    <button id="login-btn" class="login-btn">Login with Google</button>
 </div>
 
+<!-- wczytanie pliku task-->
 <script src="js/Task.js"></script>
+
+<!--wczytanie pliku w którym są umieszczone metody do pobierania danych z api-->
 <script src="js/fetches.js"></script>
+
+<!--zaimporotwoanie pliku task_Manager ktory powoduje wyswietlenie taksow na glownej stronie index.html-->
 <script src="js/show_tasks_Manager.js"></script>
+
+<!--pobranie pliku index.js który zawiera logike wylogowania oraz robienia refresha strony (za pomocą przyciskow)-->
 <script src="js/index.js"></script>
 
 <script>
-  const taskManager = new TaskManager();
-  document.addEventListener('DOMContentLoaded', async function () {
-    var token = localStorage.getItem('token');
+    // po wczytaniu strony funkcja sprawdza poprawnosc tokenu jesli wszystko jest w porzadku to pokazuje głwony content
+    document.addEventListener('DOMContentLoaded', async function () {
+        var token = localStorage.getItem('token');
 
-    if (!(await isTokenValid(token))) {
-      removeTokenFromURL();
-      localStorage.removeItem('token');
-      location.reload();
-    }
+        if (!(await isTokenValid(token))) {
+            removeTokenFromURL();
+            localStorage.removeItem('token');
+            location.reload();
+        }
 
-    if (token == null || token === '') {
-      var urlString = window.location.href;
-      var url = new URL(urlString);
-      var tokenToDownload = url.searchParams.get('token');
-      if (tokenToDownload) {
-        localStorage.setItem('token', tokenToDownload);
-        console.log('Token został dodany do localStorage.');
-        removeTokenFromURL()
-        location.reload();
-        showContent();
-      } else {
-        console.error('Nie znaleziono tokena w adresie URL.');
-        showLogin();
-      }
-    } else {
-      removeTokenFromURL()
-      showContent();
-    }
+        if (token == null || token === '') {
+            var urlString = window.location.href;
+            var url = new URL(urlString);
+            var tokenToDownload = url.searchParams.get('token');
+            if (tokenToDownload) {
+                localStorage.setItem('token', tokenToDownload);
+                console.log('Token został dodany do localStorage.');
+                removeTokenFromURL()
+                location.reload();
+                showContent();
+            } else {
+                console.error('Nie znaleziono tokena w adresie URL.');
+                showLogin();
+            }
+        } else {
+            removeTokenFromURL()
+            showContent();
+        }
 
-    function showContent() {
-      document.getElementById('content-container').style.display = 'block';
-      document.getElementById('login-container').style.display = 'none';
-    }
+        // funkcja do pokazania głównej strony
+        function showContent() {
+            document.getElementById('content-container').style.display = 'block';
+            document.getElementById('login-container').style.display = 'none';
+        }
 
-    function showLogin() {
-      console.log(link)
-      document.getElementById('login-container').style.display = 'block';
-      document.getElementById('login-btn').addEventListener('click', function () {
-        window.location.href = window.link + '/auth/google';
-      });
-    }
+        // funkcja do pokazania panelu logowania
+        function showLogin() {
+            console.log(link)
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('login-btn').addEventListener('click', function () {
+                window.location.href = window.link + '/auth/google';
+            });
+        }
 
-    function removeTokenFromURL() {
-      const currentURL = window.location.href;
-      const url = new URL(currentURL);
-      const params = new URLSearchParams(url.search);
+        function removeTokenFromURL() {
+            const currentURL = window.location.href;
+            const url = new URL(currentURL);
+            const params = new URLSearchParams(url.search);
 
-      if (params.has('token')) {
-        params.delete('token');
-        const newURL = `${url.origin}${url.pathname}?${params.toString()}`;
-        window.history.pushState({}, document.title, newURL);
-      }
-    }
-  });
+            if (params.has('token')) {
+                params.delete('token');
+                const newURL = `${url.origin}${url.pathname}?${params.toString()}`;
+                window.history.pushState({}, document.title, newURL);
+            }
+        }
+    });
 
 </script>
 

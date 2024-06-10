@@ -11,47 +11,60 @@ class Task {
     this.Mac = Mac;
   }
 
+  // Metoda tworzy element HTML reprezentujący zadanie. Dodaje nazwę zadania, identyfikatory projektu i kostki,
+  // numer ścianki, czas, oraz przyciski do edycji, wyświetlenia historii i usunięcia zadania.
+  // Obsługuje również interakcje z przyciskami.
   createTaskElement() {
     const taskDiv = document.createElement('div');
     taskDiv.classList.add('task');
 
+    // jesli Side nalezy do -1 to zmiana task jest unassigned
     if (this.Side === -1) {
       taskDiv.classList.add('unassigned-task');
     }
 
+    // inicjalizacja name
     const nameElement = document.createElement('h3');
     nameElement.textContent = this.Name;
     taskDiv.appendChild(nameElement);
 
+    // inicjalizacja project Id
     const projectIDElement = document.createElement('p');
     projectIDElement.textContent = `ProjectID: ${this.ProjectID}`;
     taskDiv.appendChild(projectIDElement);
 
+    // inicjalizacja CubeId
     const cubeIDElement = document.createElement('p');
     cubeIDElement.textContent = `CubeID: ${this.CubeID}`;
     taskDiv.appendChild(cubeIDElement);
 
+    // inicjalizacja SideElement
     const sideElement = document.createElement('p');
     sideElement.textContent = `Wall: ${this.Side}`;
     taskDiv.appendChild(sideElement);
 
+    // inicjalizacja Time
     const timeElement = document.createElement('p');
     timeElement.textContent = `Time: ` + formatTime(this.Time);
     taskDiv.appendChild(timeElement);
 
+
     const buttonContainer = document.createElement('div');
     buttonContainer.classList.add('button-container');
 
+    // inicjalizacja przycisku editBtn
     const editBtn = document.createElement('button');
     editBtn.textContent = 'Edit';
     editBtn.classList.add('edit-task-btn');
     buttonContainer.appendChild(editBtn);
 
+    // inicjalizacja przycisku historyBtn
     const showHistoryBtn = document.createElement('button');
     showHistoryBtn.textContent = 'History';
     showHistoryBtn.classList.add('show-history-btn');
     buttonContainer.appendChild(showHistoryBtn);
 
+    // inicjalizacja przycisku deleteBtn
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Delete';
     deleteBtn.classList.add('delete-task-btn');
@@ -59,22 +72,26 @@ class Task {
 
     taskDiv.appendChild(buttonContainer);
 
+    // inicjalizacja przycisku editBtn
     editBtn.addEventListener('click', () => {
       this.showEditPanel(taskDiv);
     });
 
+    // inicjalizacja przycisku showHistoryBtn
     showHistoryBtn.addEventListener('click', () => {
       showHistory(this.ProjectID, this.Name);
     });
 
+    // inicjalizacja przycisku deleteBtn
     deleteBtn.addEventListener('click', async () => {
-      const {modalOverlay, confirmBtn, cancelBtn} = createConfirmationIfUserWantToDelteTask();
+      const {modalOverlay, confirmBtn, cancelBtn} = createConfirmationIfUserWantToDeleteTask();
       confirmBtn.addEventListener('click', async () => {
         taskDiv.remove();
         await removeProject(this.ProjectID);
         document.body.removeChild(modalOverlay);
       });
 
+      // inicjalizacja przycisku cancelBtn
       cancelBtn.addEventListener('click', () => {
         document.body.removeChild(modalOverlay);
       });
@@ -83,6 +100,9 @@ class Task {
     return taskDiv;
   }
 
+  // Metoda showEditPanel wyświetla panel edycji zadania, umożliwiający zmianę
+  // adresu MAC oraz numeru ścianki.
+  // Obsługuje również logikę zapisu zmian do bazy danych po kliknięciu przycisku "Save".
   async showEditPanel(taskDiv) {
     let overlay = document.querySelector('.overlay');
     if (!overlay) {
@@ -91,6 +111,7 @@ class Task {
       document.body.appendChild(overlay);
     }
 
+    // utworzenie edit Panelu
     const editPanel = document.createElement('div');
     editPanel.classList.add('edit-panel');
 
@@ -110,6 +131,7 @@ class Task {
 
     const cubeIdToMacMap = {};
 
+    // funkcja która dla wybranego cube Id pokazuje przypisane adresy mac dla danego cubeId
     async function populateCubeIdSelect() {
       try {
         const userCubes = await getUserCubes();
@@ -156,6 +178,7 @@ class Task {
     editPanel.appendChild(cubeIdSelect);
     editPanel.appendChild(macSelect);
 
+    // funkcja ktora na zmiane cubeid w danym option wyswietla przypisane maci do danego cube id
     cubeIdSelect.addEventListener('change', function () {
       const selectedCubeId = cubeIdSelect.value;
       populateMacSelect(selectedCubeId);
@@ -171,10 +194,10 @@ class Task {
     saveBtn.textContent = 'Save';
     saveBtn.classList.add('save-btn');
 
+    // listner który zapisuje zmiany do bazy danych
     saveBtn.addEventListener('click', async () => {
       const newCubeID = cubeIdSelect.value;
       const newSide = sideInput.value;
-      // this.Name = nameInput.value;
       this.CubeID = newCubeID;
       this.Side = newSide;
       this.Mac = macSelect.value;
@@ -206,6 +229,8 @@ class Task {
     document.body.appendChild(editPanel);
   }
 
+  // Metoda aktualizuje wyświetlane informacje o zadaniu (nazwa, identyfikator kostki, numer ściany)
+  // na podstawie aktualnych wartości obiektu Task.
   updateTask(taskDiv) {
     const nameElement = taskDiv.querySelector('h3');
     const cubeIDElement = taskDiv.querySelectorAll('p')[1];
@@ -217,7 +242,8 @@ class Task {
 
 }
 
-function createConfirmationIfUserWantToDelteTask() {
+// funkcja ktora tworzy okno w któyrm użytkownik musi podjąć decyzję czy usunąć taska
+function createConfirmationIfUserWantToDeleteTask() {
   const modalOverlay = document.createElement('div');
   modalOverlay.classList.add('modal-overlay');
 
@@ -243,6 +269,7 @@ function createConfirmationIfUserWantToDelteTask() {
   return {modalOverlay, confirmBtn, cancelBtn};
 }
 
+// funkcja ktora mapuje sekundy na na dni godziny i minuty i sekundy
 function formatTime(seconds) {
   const days = Math.floor(seconds / (3600 * 24));
   seconds %= 3600 * 24;

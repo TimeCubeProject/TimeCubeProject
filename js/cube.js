@@ -135,7 +135,6 @@ class CubeList {
 // Inicjalizacja po wczytaniu strony
 document.addEventListener('DOMContentLoaded', function () {
     const cubeList = new CubeList();
-    const messageDiv = document.getElementById('message');
     const cubeForm = document.getElementById('CubeForm');
     const btnAddCube = document.getElementById('Add-Cube');
     const btnRemoveCube = document.getElementById('Remove-Cube');

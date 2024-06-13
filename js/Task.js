@@ -229,7 +229,7 @@ class Task {
     document.body.appendChild(editPanel);
   }
 
-  // Metoda aktualizuje wyświetlane informacje o zadaniu (nazwa, identyfikator kostki, numer ściany)
+  // Metoda updateTask aktualizuje wyświetlane informacje o zadaniu (nazwa, identyfikator kostki, numer ściany)
   // na podstawie aktualnych wartości obiektu Task.
   updateTask(taskDiv) {
     const nameElement = taskDiv.querySelector('h3');
@@ -262,7 +262,7 @@ function createConfirmationIfUserWantToDeleteTask() {
   cancelBtn.classList.add('cancel-btn');
 
   modal.appendChild(modalMessage);
-  modal.appendChild(confirmBtn);
+  modal.appendChild(confirmBtxn);
   modal.appendChild(cancelBtn);
   modalOverlay.appendChild(modal);
   document.body.appendChild(modalOverlay);
